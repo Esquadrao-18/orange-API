@@ -15,4 +15,4 @@ export async function findUserByEmail(email: string) {
 
 
 export interface SignUpData extends Omit<User, 'id'> {}
-export interface SignInData extends Pick<User, 'email' | 'hashedPassword'> {}
+export interface SignInData extends Pick<User, 'email' | 'password'> {}
