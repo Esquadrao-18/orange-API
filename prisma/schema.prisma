@@ -38,7 +38,7 @@ model User {
   name             String    @db.VarChar(30)
   lastName         String    @db.VarChar(70)
   email            String    @unique(map: "email_unique") @db.VarChar(80)
-  hashedPassword   String?   @db.VarChar(200)
+  password   String?   @db.VarChar(200)
   googleId         String?   @unique(map: "googleId_unique") @db.VarChar(200)
   loggedWithGoogle Boolean?  @default(false)
   Project          Project[]
