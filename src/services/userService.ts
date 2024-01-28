@@ -1,7 +1,8 @@
+import * as userRepository from "../repositories/userRepository";
 import {SignInData, SignUpData} from "../repositories/userRepository";
-import * as userRepository from '../repositories/userRepository';
 import * as errorUtils from "../utils/errorUtils";
-import {hashPassword, comparePassword} from "../utils/bcryptUtils";
+import {comparePassword, hashPassword} from "../utils/passwordUtils";
+import {createToken} from "../utils/tokenUtils";
 
 export async function signUp(newUser: SignUpData) {
     const {email, password} = newUser;
@@ -26,10 +27,10 @@ export async function signIn(userCredentials: SignInData) {
         throw errorUtils.unauthorizedError('Invalid user information');
     }
 
-    const isPasswordValid = await comparePassword(String(password), String(user.password));
+    const isPasswordValid = comparePassword(String(password), String(user.password));
     if (!isPasswordValid) {
         throw errorUtils.unauthorizedError('Invalid user information');
     }
 
-    return user;
+    return createToken(user.id);
 }
