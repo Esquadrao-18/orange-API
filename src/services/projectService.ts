@@ -1,17 +1,47 @@
 import * as projectRepository from "../repositories/projectRepository";
+import { newProjectDataInterface } from "../repositories/projectRepository";
+import * as errorUtils from "../utils/errorUtils";
+import supabase from "../config/supabaseClient";
 
-export async function createProject(newProjectData: projectRepository.newProjectData) {
-    return await projectRepository.createProject(newProjectData);    
+export async function createProject(newProjectData: newProjectDataInterface, imageBuffer?: Buffer) {
+    const {title} = newProjectData;
+
+    const titleUpperCase = title.toUpperCase();
+    const isTitleTaken = await projectRepository.getProjectByTitle(titleUpperCase);
+    if (isTitleTaken) throw errorUtils.conflictError('Project title already taken');
+
+    const normalizedTitle = titleUpperCase.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
+    const imageName = `${normalizedTitle}-image`;
+
+    const {data, error} = await supabase.storage.from('project-image').upload(imageName, imageBuffer!);
+
+    if (error) throw errorUtils.internalServerError('Error uploading image');
 }
 
 export async function deleteProject(projectId: string){
+    const project = await projectRepository.getProjectById(projectId);
+
+    if (!project) throw errorUtils.notFoundError('Project not found');
+
     return await projectRepository.deleteProject(projectId);
 }
 
-export async function readProject(projectId: string){
-    return await projectRepository.readProject(projectId);
+export async function updateProject(projectId: string, newData: projectRepository.newProjectDataInterface){
+    const project = await projectRepository.getProjectById(projectId);
+
+    if (!project) throw errorUtils.notFoundError('Project not found');
+
+    return await projectRepository.updateProject(projectId,newData);
 }
 
-export async function updateProject(projectId: string, newData: projectRepository.newProjectData){
-    return await projectRepository.updateProject(projectId,newData);
+export async function findProjectById(projectId: string){
+    const project = await projectRepository.getProjectById(projectId);
+
+    if (!project) throw errorUtils.notFoundError('Project not found');
+
+    return project;
+}
+
+export async function findProjectsByUserId(userId: string){
+    return await projectRepository.getProjectsByUserId(userId);
 }
