@@ -1,7 +1,7 @@
 import joi from 'joi';
-import { newProjectDataInterface } from '../repositories/projectRepository.js';
+import { newProjectDataSchemaInterface } from '../repositories/projectRepository.js';
 
-export const newProjectDataSchema = joi.object<newProjectDataInterface>({
+export const newProjectDataSchema = joi.object<newProjectDataSchemaInterface>({
     title: joi.string().required(),
     link: joi.string().uri().required(),
     image: joi.any().meta({ swaggerType: 'file' }).required(),

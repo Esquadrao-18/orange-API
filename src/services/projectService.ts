@@ -1,13 +1,17 @@
 import * as projectRepository from '../repositories/projectRepository';
-import { newProjectDataInterface } from '../repositories/projectRepository';
+import {
+    newProjectDataInterface,
+    newProjectData,
+} from '../repositories/projectRepository';
 import * as errorUtils from '../utils/errorUtils';
 import supabase from '../config/supabaseClient';
+import * as tagService from './tagService';
 
 export async function createProject(
-    newProjectData: newProjectDataInterface,
+    ProjectData: newProjectDataInterface,
     imageBuffer?: Buffer,
 ) {
-    const { title } = newProjectData;
+    const { title, tags } = ProjectData;
 
     const titleUpperCase = title.toUpperCase();
     const isTitleTaken =
@@ -27,14 +31,24 @@ export async function createProject(
     if (error) throw errorUtils.internalServerError('Error uploading image');
 
     const imagePath = data?.path;
-    const projectData = {
-        ...newProjectData,
+    const projectData: newProjectData = {
+        ...ProjectData,
         imagePath,
         title: titleUpperCase,
     };
     const createdProject = await projectRepository.createProject(projectData); //POSSIBILIDADE DE ERRO, PQ O projectData TEM MAIS COISAS DO QUE O BANCO DE DADOS ACEITA
     if (!createdProject)
         throw errorUtils.internalServerError('Error creating project');
+
+    const associatedTags = await tagService.treatProjectTags(
+        tags,
+        createdProject.id,
+    );
+
+    if (!associatedTags)
+        throw errorUtils.internalServerError('Error associating tags');
+
+    return createdProject;
 }
 
 export async function deleteProject(projectId: string) {
@@ -47,7 +61,7 @@ export async function deleteProject(projectId: string) {
 
 export async function updateProject(
     projectId: string,
-    newData: projectRepository.newProjectDataInterface,
+    newData: projectRepository.newProjectDataSchemaInterface,
 ) {
     const project = await projectRepository.getProjectById(projectId);
 
@@ -56,7 +70,7 @@ export async function updateProject(
     return await projectRepository.updateProject(projectId, newData);
 }
 
-export async function findProjectById(projectId: string) {
+export async function getProjectById(projectId: string) {
     const project = await projectRepository.getProjectById(projectId);
 
     if (!project) throw errorUtils.notFoundError('Project not found');
@@ -64,6 +78,10 @@ export async function findProjectById(projectId: string) {
     return project;
 }
 
-export async function getProjectsByUserId(userId: string) {
-    return await projectRepository.getProjectsByUserId(userId);
+export async function getProjectsByUserId(
+    userId: string,
+    limit = 10,
+    offset = 0,
+) {
+    return projectRepository.getProjectsByUserId(userId, limit, offset);
 }

@@ -17,7 +17,7 @@ export async function deleteProject(projectId: string) {
 
 export async function updateProject(
     projectId: string,
-    newData: newProjectDataInterface,
+    newData: newProjectDataSchemaInterface,
 ) {
     return prisma.project.update({
         where: {
@@ -35,11 +35,17 @@ export async function getProjectById(projectId: string) {
     });
 }
 
-export async function getProjectsByUserId(userId: string) {
+export async function getProjectsByUserId(
+    userId: string,
+    limit: number,
+    offset: number,
+) {
     return prisma.project.findMany({
         where: {
             userId: userId,
         },
+        take: limit,
+        skip: offset,
     });
 }
 
@@ -51,9 +57,14 @@ export async function getProjectByTitle(title: string) {
     });
 }
 
+export interface newProjectDataSchemaInterface
+    extends Omit<Project, 'id' | 'imagePath'> {
+    image: File;
+    tags: string[];
+}
+
 export interface newProjectDataInterface
     extends Omit<Project, 'id' | 'imagePath'> {
-    image: Express.Multer.File;
     tags: string[];
 }
 

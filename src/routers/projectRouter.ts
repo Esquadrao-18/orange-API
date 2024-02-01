@@ -13,4 +13,9 @@ projectRouter.post(
     projectController.createProject,
 );
 
+projectRouter.delete(
+    '/deleteProject/:projectId',
+    projectController.deleteProject,
+);
+
 export default projectRouter;

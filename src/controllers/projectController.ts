@@ -9,13 +9,22 @@ export async function createProject(req: Request, res: Response) {
     res.sendStatus(201);
 }
 
-export async function deleteProject(req: Request, res: Response, id: string) {
-    await projectService.deleteProject(id);
+export async function deleteProject(req: Request, res: Response) {
+    const { projectId } = req.params;
+    await projectService.deleteProject(projectId);
     res.sendStatus(204);
 }
 
-export async function readProject(req: Request, res: Response, id: string) {
-    const project = await projectService.findProjectById(id);
+export async function getProjectById(req: Request, res: Response) {
+    const { projectId } = req.params;
+    const project = await projectService.getProjectById(projectId);
 
-    res.sendStatus(201).json({ project: project });
+    res.sendStatus(201).json(project);
+}
+
+export async function getProjectsByUserId(req: Request, res: Response) {
+    const { userId } = req.params;
+    const projects = await projectService.getProjectsByUserId(userId);
+
+    res.sendStatus(201).json(projects);
 }

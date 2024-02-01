@@ -13,5 +13,4 @@ trim_trailing_whitespace = false
 
 # Use 2 spaces since npm does not respect custom indentation settings
 [package.json]
-indent_style = space
 indent_size = 2
