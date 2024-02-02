@@ -1,5 +1,5 @@
-import {Request, Response} from "express";
-import * as userService from "../services/userService";
+import { Request, Response } from 'express';
+import * as userService from '../services/userService';
 
 export async function signUp(req: Request, res: Response) {
     await userService.signUp(res.locals.verified);
@@ -10,5 +10,5 @@ export async function signUp(req: Request, res: Response) {
 export async function signIn(req: Request, res: Response) {
     const token = await userService.signIn(res.locals.verified);
 
-    res.status(200).send({token: token});
+    res.status(200).send({ token: token });
 }

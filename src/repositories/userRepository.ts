@@ -1,5 +1,5 @@
 import prisma from '../config/database';
-import {User} from '@prisma/client';
+import { User } from '@prisma/client';
 
 export async function createUser(newUser: SignUpData) {
     return prisma.user.create({
@@ -9,10 +9,10 @@ export async function createUser(newUser: SignUpData) {
 
 export async function findUserByEmail(email: string) {
     return prisma.user.findUnique({
-        where: {email},
+        where: { email },
     });
 }
 
-
 export interface SignUpData extends Omit<User, 'id'> {}
+
 export interface SignInData extends Pick<User, 'email' | 'password'> {}

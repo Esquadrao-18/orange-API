@@ -1,11 +1,11 @@
-import * as userRepository from "../repositories/userRepository";
-import {SignInData, SignUpData} from "../repositories/userRepository";
-import * as errorUtils from "../utils/errorUtils";
-import {comparePassword, hashPassword} from "../utils/passwordUtils";
-import {createToken} from "../utils/tokenUtils";
+import * as userRepository from '../repositories/userRepository';
+import { SignInData, SignUpData } from '../repositories/userRepository';
+import * as errorUtils from '../utils/errorUtils';
+import { comparePassword, hashPassword } from '../utils/passwordUtils';
+import { createToken } from '../utils/tokenUtils';
 
 export async function signUp(newUser: SignUpData) {
-    const {email, password} = newUser;
+    const { email, password } = newUser;
 
     const isEmailTaken = await userRepository.findUserByEmail(email);
     if (isEmailTaken) {
@@ -14,20 +14,23 @@ export async function signUp(newUser: SignUpData) {
 
     const hashedPassword = hashPassword(String(password));
 
-    newUser = {...newUser, password: hashedPassword};
+    newUser = { ...newUser, password: hashedPassword };
 
     return await userRepository.createUser(newUser);
 }
 
 export async function signIn(userCredentials: SignInData) {
-    const {email, password} = userCredentials;
+    const { email, password } = userCredentials;
 
     const user = await userRepository.findUserByEmail(email);
     if (!user) {
         throw errorUtils.unauthorizedError('Invalid user information');
     }
 
-    const isPasswordValid = comparePassword(String(password), String(user.password));
+    const isPasswordValid = comparePassword(
+        String(password),
+        String(user.password),
+    );
     if (!isPasswordValid) {
         throw errorUtils.unauthorizedError('Invalid user information');
     }

@@ -9,7 +9,7 @@ datasource db {
 
 model Project {
   id          String       @id @db.Uuid @default(uuid())
-  title       String       @db.VarChar(80)
+  title       String       @unique(map: "projectTitle_unique") @db.VarChar(80)
   link        String       @db.VarChar(200)
   description String
   imagePath   String       @db.VarChar(200)

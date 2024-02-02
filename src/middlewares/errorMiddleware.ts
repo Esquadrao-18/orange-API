@@ -9,7 +9,7 @@ export default function errorMiddleware(
     err: Error | AppError,
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
 ) {
     if (isAppError(err)) {
         return res.status(errorTypeToStatusCode(err.type)).send(err.message);

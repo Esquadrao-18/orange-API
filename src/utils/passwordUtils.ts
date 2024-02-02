@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 const saltRounds = Number(+process.env.SALT_ROUNDS) || 10;
 
 export function hashPassword(password: string) {
