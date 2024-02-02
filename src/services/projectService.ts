@@ -40,7 +40,7 @@ export async function createProject(
     if (!createdProject)
         throw errorUtils.internalServerError('Error creating project');
 
-    const associatedTags = await tagService.treatProjectTags(
+    const associatedTags = await tagService.treatNewProjectTags(
         tags,
         createdProject.id,
     );
@@ -61,7 +61,7 @@ export async function deleteProject(projectId: string) {
 
 export async function updateProject(
     projectId: string,
-    newData: projectRepository.newProjectDataSchemaInterface,
+    newData: newProjectDataInterface,
 ) {
     const project = await projectRepository.getProjectById(projectId);
 
@@ -71,9 +71,15 @@ export async function updateProject(
 }
 
 export async function getProjectById(projectId: string) {
-    const project = await projectRepository.getProjectById(projectId);
+    const foundProject = await projectRepository.getProjectById(projectId);
 
-    if (!project) throw errorUtils.notFoundError('Project not found');
+    if (!foundProject) throw errorUtils.notFoundError('Project not found');
+
+    const { ProjectTag, ...projectData } = foundProject;
+    const project = {
+        ...projectData,
+        tags: ProjectTag.map(projectTag => projectTag.Tag),
+    };
 
     return project;
 }
@@ -83,5 +89,41 @@ export async function getProjectsByUserId(
     limit = 10,
     offset = 0,
 ) {
-    return projectRepository.getProjectsByUserId(userId, limit, offset);
+    const foundProjects = await projectRepository.getProjectsByUserId(
+        userId,
+        limit,
+        offset,
+    );
+
+    if (!foundProjects) throw errorUtils.notFoundError('Projects not found');
+
+    const projects = [];
+    for (const project of foundProjects) {
+        const { ProjectTag, ...projectData } = project;
+        const projectWithTags = {
+            ...projectData,
+            tags: ProjectTag.map(projectTag => projectTag.Tag),
+        };
+        projects.push(projectWithTags);
+    }
+
+    return projects;
+}
+
+// export async function getProjectsByUserIdAndTags(
+//     userId: string,
+//     tags: string[],
+//     limit = 10,
+//     offset = 0,
+// ) {
+//     return projectRepository.getProjectsByUserIdAndTags(
+//         userId,
+//         tags,
+//         limit,
+//         offset,
+//     );
+// }
+
+export async function getProjects(limit = 10, offset = 0) {
+    return projectRepository.getProjects(limit, offset);
 }

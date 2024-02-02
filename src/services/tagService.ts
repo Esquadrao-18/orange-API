@@ -9,7 +9,7 @@ export async function createTag(tag: string) {
     return await tagRepository.createTag(tag);
 }
 
-export async function treatProjectTags(tags: string[], projectId: string) {
+export async function treatNewProjectTags(tags: string[], projectId: string) {
     const treatedTags: Tag[] = [];
 
     for (const tag of tags) {

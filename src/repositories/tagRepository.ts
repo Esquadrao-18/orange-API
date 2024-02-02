@@ -24,3 +24,16 @@ export async function associateTagWithProject(
         },
     });
 }
+
+export async function getTagsByProjectId(projectId: string): Promise<Tag[]> {
+    const projectTags = await prisma.projectTag.findMany({
+        where: { projectId: projectId },
+    });
+    const tags = await Promise.all(
+        projectTags.map(projectTag => {
+            const findUniqueQuery = { where: { id: projectTag.tagId } };
+            return prisma.tag.findUnique(findUniqueQuery);
+        }),
+    );
+    return tags.filter(tag => tag !== null) as Tag[];
+}
