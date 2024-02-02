@@ -2,10 +2,13 @@ import * as projectRepository from '../repositories/projectRepository';
 import {
     newProjectDataInterface,
     newProjectData,
+    updateProjectData,
+    updateProjectDataInterface,
 } from '../repositories/projectRepository';
 import * as errorUtils from '../utils/errorUtils';
 import supabase from '../config/supabaseClient';
 import * as tagService from './tagService';
+import { deleteProjectTags } from '../repositories/tagRepository';
 
 export async function createProject(
     ProjectData: newProjectDataInterface,
@@ -36,7 +39,7 @@ export async function createProject(
         imagePath,
         title: titleUpperCase,
     };
-    const createdProject = await projectRepository.createProject(projectData); //POSSIBILIDADE DE ERRO, PQ O projectData TEM MAIS COISAS DO QUE O BANCO DE DADOS ACEITA
+    const createdProject = await projectRepository.createProject(projectData);
     if (!createdProject)
         throw errorUtils.internalServerError('Error creating project');
 
@@ -53,21 +56,31 @@ export async function createProject(
 
 export async function deleteProject(projectId: string) {
     const project = await projectRepository.getProjectById(projectId);
-
     if (!project) throw errorUtils.notFoundError('Project not found');
+
+    const { error } = await supabase.storage
+        .from('project-image')
+        .remove([project.imagePath]);
+    if (error) throw errorUtils.internalServerError('Error deleting image');
+
+    await deleteProjectTags(projectId);
 
     return await projectRepository.deleteProject(projectId);
 }
 
 export async function updateProject(
     projectId: string,
-    newData: newProjectDataInterface,
+    newData: updateProjectDataInterface,
 ) {
     const project = await projectRepository.getProjectById(projectId);
-
     if (!project) throw errorUtils.notFoundError('Project not found');
 
-    return await projectRepository.updateProject(projectId, newData);
+    const { tags, ...newProjectData } = newData;
+    if (tags) {
+        await tagService.treatUpdatedProjectTags(newData.tags, projectId);
+    }
+
+    return await projectRepository.updateProject(projectId, newProjectData);
 }
 
 export async function getProjectById(projectId: string) {
