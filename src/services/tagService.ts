@@ -35,7 +35,59 @@ export async function treatNewProjectTags(tags: string[], projectId: string) {
         );
 
         if (!projectTag)
-            throw errorUtils.internalServerError('Error associating tags');
+            throw errorUtils.internalServerError(
+                `Error associating tag ${tag.name}`,
+            );
+    }
+
+    return true;
+}
+
+export async function treatUpdatedProjectTags(
+    tags: string[],
+    projectId: string,
+) {
+    const treatedTags: Tag[] = [];
+
+    for (const tag of tags) {
+        const normalizedTag = tag
+            .toUpperCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
+        const existingTag = await tagRepository.getTagByName(normalizedTag);
+
+        if (!existingTag) {
+            const newTag = await createTag(normalizedTag);
+            treatedTags.push(newTag);
+        } else {
+            treatedTags.push(existingTag);
+        }
+    }
+    const currentProjectTags = await tagRepository.getProjectTags(projectId);
+
+    const tagsToRemove = currentProjectTags.filter(
+        currentTag => !treatedTags.some(tag => tag.id === currentTag.id),
+    );
+
+    for (const tag of tagsToRemove) {
+        await tagRepository.removeTagFromProject(tag.id, projectId);
+    }
+
+    for (const tag of treatedTags) {
+        if (
+            !currentProjectTags.some(currentTag => currentTag.tagId === tag.id)
+        ) {
+            const projectTag = await tagRepository.associateTagWithProject(
+                tag.id,
+                projectId,
+            );
+
+            if (!projectTag)
+                throw errorUtils.internalServerError(
+                    `Error associating tag ${tag.name}`,
+                );
+        }
     }
 
     return true;

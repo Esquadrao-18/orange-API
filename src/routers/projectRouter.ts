@@ -44,12 +44,12 @@ projectRouter.get(
     projectController.getProjectsByUserId,
 );
 
-projectRouter.get(
-    '/projects/:userId/tags',
-    validateSchema(projectTagsSchema),
-    tokenMiddleware,
-    projectController.getProjectsByUserIdAndTags,
-);
+// projectRouter.get(
+//     '/projects/:userId/tags',
+//     validateSchema(projectTagsSchema),
+//     tokenMiddleware,
+//     projectController.getProjectsByUserIdAndTags,
+// );
 
 projectRouter.get('/projects', tokenMiddleware, projectController.getProjects);
 

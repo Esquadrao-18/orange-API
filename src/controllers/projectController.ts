@@ -26,7 +26,7 @@ export async function getProjectById(req: Request, res: Response) {
     const { projectId } = req.params;
     const project = await projectService.getProjectById(projectId);
 
-    res.sendStatus(201).json(project);
+    res.sendStatus(200).json(project);
 }
 
 export async function getProjectsByUserId(req: Request, res: Response) {
@@ -41,19 +41,19 @@ export async function getProjectsByUserId(req: Request, res: Response) {
     res.sendStatus(201).json(projects);
 }
 
-export async function getProjectsByUserIdAndTags(req: Request, res: Response) {
-    const { userId } = req.params;
-    const { tags } = req.body;
-    const { limit, offset } = req.query;
-    const projects = await projectService.getProjectsByUserIdAndTags(
-        userId,
-        tags,
-        Number(limit),
-        Number(offset),
-    );
-
-    res.sendStatus(201).json(projects);
-}
+// export async function getProjectsByUserIdAndTags(req: Request, res: Response) {
+//     const { userId } = req.params;
+//     const { tags } = req.body;
+//     const { limit, offset } = req.query;
+//     const projects = await projectService.getProjectsByUserIdAndTags(
+//         userId,
+//         tags,
+//         Number(limit),
+//         Number(offset),
+//     );
+//
+//     res.sendStatus(201).json(projects);
+// }
 
 export async function getProjects(req: Request, res: Response) {
     const { limit, offset } = req.query;

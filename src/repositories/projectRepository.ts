@@ -17,7 +17,7 @@ export async function deleteProject(projectId: string) {
 
 export async function updateProject(
     projectId: string,
-    newData: newProjectDataInterface,
+    newData: newProjectData,
 ) {
     return prisma.project.update({
         where: {
@@ -114,5 +114,9 @@ export interface newProjectDataInterface
 export interface newProjectData extends Omit<Project, 'id'> {}
 
 export interface updateProjectData extends Omit<Project, 'id'> {}
+
+export interface updateProjectDataInterface extends Omit<Project, 'id'> {
+    tags: string[];
+}
 
 export type projects = Project[];
