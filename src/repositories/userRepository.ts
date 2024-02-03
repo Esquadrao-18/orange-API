@@ -13,10 +13,8 @@ export async function findUserByEmail(email: string) {
     });
 }
 
-export interface SignUpData
-    extends Omit<User, 'id' | 'googleId' | 'loggedWithGoogle'> {}
+export interface SignUpData extends Omit<User, 'id' | 'googleId'> {}
 
 export interface SignInData extends Pick<User, 'email' | 'password'> {}
 
-export interface SignInWithGoogleData
-    extends Omit<User, 'id' | 'password' | 'loggedWithGoogle'> {}
+export interface SignInWithGoogleData extends Omit<User, 'id' | 'password'> {}
