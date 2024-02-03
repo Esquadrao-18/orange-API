@@ -12,3 +12,9 @@ export async function signIn(req: Request, res: Response) {
 
     res.status(200).send({ token: token });
 }
+
+export async function signInWithGoogle(req: Request, res: Response) {
+    const token = await userService.signInWithGoogle(res.locals.verified);
+
+    res.status(200).send({ token: token });
+}

@@ -1,5 +1,9 @@
 import * as userRepository from '../repositories/userRepository';
-import { SignInData, SignUpData } from '../repositories/userRepository';
+import {
+    SignInData,
+    SignUpData,
+    SignInWithGoogleData,
+} from '../repositories/userRepository';
 import * as errorUtils from '../utils/errorUtils';
 import { comparePassword, hashPassword } from '../utils/passwordUtils';
 import { createToken } from '../utils/tokenUtils';
@@ -34,6 +38,15 @@ export async function signIn(userCredentials: SignInData) {
     if (!isPasswordValid) {
         throw errorUtils.unauthorizedError('Invalid user information');
     }
+
+    return createToken(user.id);
+}
+
+export async function signInWithGoogle(googleUser: SignInWithGoogleData) {
+    const { email } = googleUser;
+
+    const user = await userRepository.findUserByEmail(email);
+    if (!user) return await userRepository.createUser(googleUser);
 
     return createToken(user.id);
 }
