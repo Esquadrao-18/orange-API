@@ -39,7 +39,9 @@ export async function signIn(userCredentials: SignInData) {
         throw errorUtils.unauthorizedError('Invalid user information');
     }
 
-    return createToken(user.id);
+    const userId = user.id;
+
+    return createToken(userId);
 }
 
 export async function signInWithGoogle(googleUser: SignInWithGoogleData) {
@@ -48,5 +50,7 @@ export async function signInWithGoogle(googleUser: SignInWithGoogleData) {
     const user = await userRepository.findUserByEmail(email);
     if (!user) return await userRepository.createUser(googleUser);
 
-    return createToken(user.id);
+    const userId = user.id;
+
+    return createToken(userId);
 }

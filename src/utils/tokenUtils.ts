@@ -8,7 +8,7 @@ if (!process.env.JWT_SECRET) {
 }
 
 export function createToken(userId: string) {
-    return jwt.sign({ userId: userId }, process.env.JWT_SECRET!, {
+    return jwt.sign({ userId }, process.env.JWT_SECRET!, {
         expiresIn: process.env.JWT_EXPIRES_IN,
     });
 }
