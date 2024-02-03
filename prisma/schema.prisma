@@ -1,45 +1,44 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model Project {
-  id          String       @id @db.Uuid @default(uuid())
-  title       String       @unique(map: "projectTitle_unique") @db.VarChar(80)
-  link        String       @db.VarChar(200)
-  description String
-  imagePath   String       @db.VarChar(200)
-  userId      String       @db.Uuid
-  releaseDate DateTime     @db.Date
-  User        User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "userId_FK")
-  ProjectTag  ProjectTag[]
+    id          String       @id @default(uuid()) @db.Uuid
+    title       String       @unique(map: "projectTitle_unique") @db.VarChar(80)
+    link        String       @db.VarChar(200)
+    description String
+    imagePath   String       @db.VarChar(200)
+    userId      String       @db.Uuid
+    releaseDate DateTime     @db.Date
+    User        User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "userId_FK")
+    ProjectTag  ProjectTag[]
 }
 
 model ProjectTag {
-  id        String  @id @db.Uuid @default(uuid())
-  projectId String  @db.Uuid
-  tagId     String  @db.Uuid
-  Project   Project @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "projectId_FK")
-  Tag       Tag     @relation(fields: [tagId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tagId_FK")
+    id        String  @id @default(uuid()) @db.Uuid
+    projectId String  @db.Uuid
+    tagId     String  @db.Uuid
+    Project   Project @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "projectId_FK")
+    Tag       Tag     @relation(fields: [tagId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tagId_FK")
 }
 
 model Tag {
-  id         String       @id @db.Uuid @default(uuid())
-  name       String       @unique(map: "name_unique") @db.VarChar(30)
-  ProjectTag ProjectTag[]
+    id         String       @id @default(uuid()) @db.Uuid
+    name       String       @unique(map: "name_unique") @db.VarChar(30)
+    ProjectTag ProjectTag[]
 }
 
 model User {
-  id               String    @id @db.Uuid @default(uuid())
-  name             String    @db.VarChar(30)
-  lastName         String    @db.VarChar(70)
-  email            String    @unique(map: "email_unique") @db.VarChar(80)
-  password   String?   @db.VarChar(200)
-  googleId         String?   @unique(map: "googleId_unique") @db.VarChar(200)
-  loggedWithGoogle Boolean?  @default(false)
-  Project          Project[]
+    id       String    @id @default(uuid()) @db.Uuid
+    name     String    @db.VarChar(30)
+    lastName String    @db.VarChar(70)
+    email    String    @unique(map: "email_unique") @db.VarChar(80)
+    password String?   @db.VarChar(200)
+    googleId String?   @unique(map: "googleId_unique") @db.VarChar(200)
+    Project  Project[]
 }
