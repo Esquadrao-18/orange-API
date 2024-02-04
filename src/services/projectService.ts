@@ -2,7 +2,6 @@ import * as projectRepository from '../repositories/projectRepository';
 import {
     newProjectDataInterface,
     newProjectData,
-    updateProjectData,
     updateProjectDataInterface,
 } from '../repositories/projectRepository';
 import * as errorUtils from '../utils/errorUtils';
@@ -11,10 +10,12 @@ import * as tagService from './tagService';
 import { deleteProjectTags } from '../repositories/tagRepository';
 
 export async function createProject(
-    ProjectData: newProjectDataInterface,
+    projectData: newProjectDataInterface,
     imageBuffer?: Buffer,
 ) {
-    const { title, tags } = ProjectData;
+    const { title, tags, ...rest } = projectData;
+
+    console.log(`TAGS =========> ${tags}`);
 
     const titleUpperCase = title.toUpperCase();
     const isTitleTaken =
@@ -25,21 +26,37 @@ export async function createProject(
     const normalizedTitle = titleUpperCase
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
-        .replace(/\s+/g, '-');
+        .replace(/\s+/g, '-')
+        .replace(/['"]/g, '');
     const imageName = `${normalizedTitle}-image`;
+    console.log(`NOME DA IMAGEM =========> ${imageName}`);
+    console.log(
+        `BUFFER DA IMAGEM =========> ${imageBuffer ? 'true' : 'false'}`,
+    );
 
     const { data, error } = await supabase.storage
         .from('project-image')
-        .upload(imageName, imageBuffer!);
+        .upload(`public/${imageName}`, imageBuffer!, { upsert: true });
+    if (error) console.log(`ERRO DO SUPABASE =========> ${error}`);
     if (error) throw errorUtils.internalServerError('Error uploading image');
 
+    console.log(`DATA DA IMAGEM =========>`);
+    console.log(data);
+
     const imagePath = data?.path;
-    const projectData: newProjectData = {
-        ...ProjectData,
-        imagePath,
+    const imageUrl = await supabase.storage
+        .from('project-image')
+        .getPublicUrl(imagePath!);
+
+    console.log(`URL DA IMAGEM =========> ${imageUrl.data.publicUrl}`);
+
+    const newProjectData: newProjectData = {
+        ...rest,
+        imagePath: imageUrl.data.publicUrl,
         title: titleUpperCase,
     };
-    const createdProject = await projectRepository.createProject(projectData);
+    const createdProject =
+        await projectRepository.createProject(newProjectData);
     if (!createdProject)
         throw errorUtils.internalServerError('Error creating project');
 
@@ -50,6 +67,8 @@ export async function createProject(
 
     if (!associatedTags)
         throw errorUtils.internalServerError('Error associating tags');
+
+    console.log(`ACABOU DE CRIAR O PROJETO!!!!!!!!!!!!`);
 
     return createdProject;
 }
@@ -97,16 +116,8 @@ export async function getProjectById(projectId: string) {
     return project;
 }
 
-export async function getProjectsByUserId(
-    userId: string,
-    limit = 10,
-    offset = 0,
-) {
-    const foundProjects = await projectRepository.getProjectsByUserId(
-        userId,
-        limit,
-        offset,
-    );
+export async function getProjectsByUserId(userId: string) {
+    const foundProjects = await projectRepository.getProjectsByUserId(userId);
 
     if (!foundProjects) throw errorUtils.notFoundError('Projects not found');
 
@@ -123,20 +134,6 @@ export async function getProjectsByUserId(
     return projects;
 }
 
-// export async function getProjectsByUserIdAndTags(
-//     userId: string,
-//     tags: string[],
-//     limit = 10,
-//     offset = 0,
-// ) {
-//     return projectRepository.getProjectsByUserIdAndTags(
-//         userId,
-//         tags,
-//         limit,
-//         offset,
-//     );
-// }
-
-export async function getProjects(limit = 10, offset = 0) {
-    return projectRepository.getProjects(limit, offset);
+export async function getProjects() {
+    return projectRepository.getProjects();
 }
