@@ -16,6 +16,6 @@ export default function errorMiddleware(
         console.error(err.message);
         return res.status(errorTypeToStatusCode(err.type)).send(err.message);
     }
-
+    console.error(err.message);
     return res.sendStatus(500);
 }
