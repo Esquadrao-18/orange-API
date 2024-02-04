@@ -2,20 +2,16 @@ import { Router } from 'express';
 import validateSchema from '../middlewares/validateSchemaMiddleware';
 import { upload } from '../config/multerConfig';
 import * as projectController from '../controllers/projectController';
-import {
-    newProjectDataSchema,
-    updateProjectDataSchema,
-    projectTagsSchema,
-} from '../schemas/projectSchema';
+import { updateProjectDataSchema } from '../schemas/projectSchema';
 import tokenMiddleware from '../middlewares/tokenMiddleware';
 
 const projectRouter = Router();
 
 projectRouter.post(
     '/createProject',
-    validateSchema(newProjectDataSchema),
     tokenMiddleware,
     upload.single('image'),
+    // validateSchema(newProjectDataSchema),
     projectController.createProject,
 );
 
@@ -27,8 +23,8 @@ projectRouter.delete(
 
 projectRouter.put(
     '/updateProject/:projectId',
-    validateSchema(updateProjectDataSchema),
     tokenMiddleware,
+    validateSchema(updateProjectDataSchema),
     projectController.updateProject,
 );
 
@@ -43,13 +39,6 @@ projectRouter.get(
     tokenMiddleware,
     projectController.getProjectsByUserId,
 );
-
-// projectRouter.get(
-//     '/projects/:userId/tags',
-//     validateSchema(projectTagsSchema),
-//     tokenMiddleware,
-//     projectController.getProjectsByUserIdAndTags,
-// );
 
 projectRouter.get('/projects', tokenMiddleware, projectController.getProjects);
 
