@@ -68,6 +68,8 @@ export async function createProject(
     if (!associatedTags)
         throw errorUtils.internalServerError('Error associating tags');
 
+    console.log(`ACABOU DE CRIAR O PROJETO!!!!!!!!!!!!`);
+
     return createdProject;
 }
 
