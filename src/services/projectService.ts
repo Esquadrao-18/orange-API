@@ -126,9 +126,10 @@ export async function getProjects() {
 
     const projects = [];
     for (const project of projectList) {
-        const { ProjectTag, ...projectData } = project;
+        const { ProjectTag, User, ...projectData } = project;
         const projectWithTags = {
             ...projectData,
+            userName: `${User.name} ${User.lastName}`,
             tags: ProjectTag.map(projectTag => projectTag.Tag),
         };
         projects.push(projectWithTags);
