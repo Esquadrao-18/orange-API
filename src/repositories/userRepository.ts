@@ -13,6 +13,16 @@ export async function findUserByEmail(email: string) {
     });
 }
 
+export async function updateUser(
+    userId: string,
+    newUserInformation: SignInWithGoogleData,
+) {
+    return prisma.user.update({
+        where: { id: userId },
+        data: newUserInformation,
+    });
+}
+
 export interface SignUpData extends Omit<User, 'id' | 'googleId'> {}
 
 export interface SignInData extends Pick<User, 'email' | 'password'> {}
