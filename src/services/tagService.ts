@@ -65,10 +65,14 @@ export async function treatUpdatedProjectTags(
         }
     }
     const currentProjectTags = await tagRepository.getProjectTags(projectId);
+    console.log('CURRENT PROJECT TAGS ==========>');
+    console.log(currentProjectTags);
 
     const tagsToRemove = currentProjectTags.filter(
         currentTag => !treatedTags.some(tag => tag.id === currentTag.id),
     );
+    console.log('TAGS TO REMOVE ==========>');
+    console.log(tagsToRemove);
 
     for (const tag of tagsToRemove) {
         await tagRepository.removeTagFromProject(tag.id, projectId);
