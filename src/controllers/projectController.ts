@@ -26,18 +26,18 @@ export async function getProjectById(req: Request, res: Response) {
     const { projectId } = req.params;
     const project = await projectService.getProjectById(projectId);
 
-    return res.sendStatus(200).json(project);
+    return res.status(200).json(project);
 }
 
 export async function getProjectsByUserId(req: Request, res: Response) {
     const { userId } = req.params;
     const projects = await projectService.getProjectsByUserId(userId);
 
-    return res.sendStatus(200).json(projects);
+    return res.status(200).json(projects);
 }
 
 export async function getProjects(req: Request, res: Response) {
     const projects = await projectService.getProjects();
 
-    return res.sendStatus(200).json(projects);
+    return res.status(200).json(projects);
 }
