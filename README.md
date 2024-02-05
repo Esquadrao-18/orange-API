@@ -64,8 +64,8 @@ A aplicação possui vários endpoints que permitem interagir com o sistema. Aqu
 }
 ```
 
-- **POST /signin/google**: Autentica um usuário através do Google. O corpo da solicitação deve incluir o token do
-  Google.
+- **POST /signin/google**: Autentica um usuário através do Google. O corpo da solicitação deve incluir o identificador
+  do Google.
 
 ```json
 {
@@ -131,7 +131,7 @@ https://orange-api.onrender.com/projects
 
 ### Cliente de API
 
-Este projeto acompanha um arquivo chamado `HTTP_REQUESTS_COLLECTION.har` que pode ser importado em clientes de API como
+Este projeto acompanha um arquivo chamado `HTTP_REQUESTS_COLLECTION.json` que pode ser importado em clientes de API como
 o Insomnia ou Postman. Este arquivo contém uma coleção de requisições HTTP que podem ser utilizadas para testar a API.
 
 ## Estrutura do Projeto
