@@ -7,7 +7,7 @@ router.use(userRouter);
 router.use(projectRouter);
 
 // Health check route
-router.get('/statusMonitor', (req: Request, res: Response) => {
+router.head('/statusMonitor', (req: Request, res: Response) => {
     res.sendStatus(204);
 });
 

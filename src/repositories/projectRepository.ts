@@ -17,7 +17,7 @@ export async function deleteProject(projectId: string) {
 
 export async function updateProject(
     projectId: string,
-    newData: newProjectData,
+    newData: updateProjectDataInterface,
 ) {
     return prisma.project.update({
         where: {
@@ -90,23 +90,17 @@ export async function getProjects() {
     });
 }
 
-export interface newProjectDataSchemaInterface
-    extends Omit<Project, 'id' | 'imagePath'> {
-    image: File;
+export interface updateProjectDataSchemaInterface
+    extends Omit<Project, 'id' | 'imagePath' | 'imageUrl'> {
     tags: string[];
 }
 
+export interface updateProjectDataInterface
+    extends Omit<Project, 'id' | 'imagePath' | 'imageUrl'> {}
+
 export interface newProjectDataInterface
-    extends Omit<Project, 'id' | 'imagePath'> {
+    extends Omit<Project, 'id' | 'imagePath' | 'imageUrl'> {
     tags: string[];
 }
 
 export interface newProjectData extends Omit<Project, 'id'> {}
-
-export interface updateProjectData extends Omit<Project, 'id'> {}
-
-export interface updateProjectDataInterface extends Omit<Project, 'id'> {
-    tags: string[];
-}
-
-export type projects = Project[];

@@ -1,26 +1,12 @@
 import joi from 'joi';
-import { newProjectDataSchemaInterface } from '../repositories/projectRepository.js';
-
-export const newProjectDataSchema = joi.object<newProjectDataSchemaInterface>({
-    title: joi.string().required(),
-    link: joi.string().uri().required(),
-    tags: joi.array().items(joi.string()),
-    description: joi.string().required(),
-    releaseDate: joi.date().required(),
-    userId: joi.string().required(),
-});
+import { updateProjectDataSchemaInterface } from '../repositories/projectRepository.js';
 
 export const updateProjectDataSchema =
-    joi.object<newProjectDataSchemaInterface>({
-        title: joi.string(),
-        link: joi.string().uri(),
-        image: joi.any().meta({ swaggerType: 'file' }),
-        tags: joi.array().items(joi.string()),
-        description: joi.string(),
-        releaseDate: joi.date(),
-        userId: joi.string(),
+    joi.object<updateProjectDataSchemaInterface>({
+        title: joi.string().optional(),
+        link: joi.string().uri().optional(),
+        tags: joi.array().items(joi.string()).optional(),
+        description: joi.string().optional(),
+        releaseDate: joi.date().optional(),
+        userId: joi.string().optional(),
     });
-
-export const projectTagsSchema = joi.object({
-    tags: joi.array().items(joi.string()),
-});

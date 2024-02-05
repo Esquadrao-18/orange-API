@@ -31,20 +31,10 @@ export async function getProjectTags(projectId: string): Promise<ProjectTag[]> {
     });
 }
 
-export async function removeTagFromProject(
-    tagId: string,
-    projectId: string,
-): Promise<void> {
-    const projectTag = await prisma.projectTag.findFirst({
+export async function removeTagFromProject(projectTagId: string) {
+    return await prisma.projectTag.delete({
         where: {
-            projectId: projectId,
-            tagId: tagId,
+            id: projectTagId,
         },
     });
-
-    if (projectTag) {
-        await prisma.projectTag.delete({
-            where: { id: projectTag.id },
-        });
-    }
 }
