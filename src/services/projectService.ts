@@ -92,11 +92,10 @@ export async function updateProject(
 }
 
 export async function getProjectById(projectId: string) {
-    const foundProject = await projectRepository.getProjectById(projectId);
+    const projectInfo = await projectRepository.getProjectById(projectId);
+    if (!projectInfo) throw errorUtils.notFoundError('Project not found');
 
-    if (!foundProject) throw errorUtils.notFoundError('Project not found');
-
-    const { ProjectTag, ...projectData } = foundProject;
+    const { ProjectTag, ...projectData } = projectInfo;
     const project = {
         ...projectData,
         tags: ProjectTag.map(projectTag => projectTag.Tag),
@@ -106,12 +105,11 @@ export async function getProjectById(projectId: string) {
 }
 
 export async function getProjectsByUserId(userId: string) {
-    const foundProjects = await projectRepository.getProjectsByUserId(userId);
-
-    if (!foundProjects) throw errorUtils.notFoundError('Projects not found');
+    const projectList = await projectRepository.getProjectsByUserId(userId);
+    if (!projectList) throw errorUtils.notFoundError('Projects not found');
 
     const projects = [];
-    for (const project of foundProjects) {
+    for (const project of projectList) {
         const { ProjectTag, ...projectData } = project;
         const projectWithTags = {
             ...projectData,
@@ -124,5 +122,18 @@ export async function getProjectsByUserId(userId: string) {
 }
 
 export async function getProjects() {
-    return projectRepository.getProjects();
+    const projectList = await projectRepository.getProjects();
+    if (!projectList) throw errorUtils.notFoundError('Projects not found');
+
+    const projects = [];
+    for (const project of projectList) {
+        const { ProjectTag, ...projectData } = project;
+        const projectWithTags = {
+            ...projectData,
+            tags: ProjectTag.map(projectTag => projectTag.Tag),
+        };
+        projects.push(projectWithTags);
+    }
+
+    return projects;
 }
