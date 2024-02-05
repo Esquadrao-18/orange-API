@@ -13,6 +13,7 @@ model Project {
     link        String       @db.VarChar(200)
     description String
     imagePath   String       @db.VarChar(200)
+    imageUrl    String       @db.VarChar(200)
     userId      String       @db.Uuid
     releaseDate DateTime     @db.Date
     User        User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "userId_FK")
@@ -23,7 +24,7 @@ model ProjectTag {
     id        String  @id @default(uuid()) @db.Uuid
     projectId String  @db.Uuid
     tagId     String  @db.Uuid
-    Project   Project @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "projectId_FK")
+    Project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "projectId_FK")
     Tag       Tag     @relation(fields: [tagId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tagId_FK")
 }
 

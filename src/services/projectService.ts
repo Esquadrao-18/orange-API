@@ -7,15 +7,12 @@ import {
 import * as errorUtils from '../utils/errorUtils';
 import supabase from '../config/supabaseClient';
 import * as tagService from './tagService';
-import { deleteProjectTags } from '../repositories/tagRepository';
 
 export async function createProject(
     projectData: newProjectDataInterface,
     imageBuffer?: Buffer,
 ) {
     const { title, tags, ...rest } = projectData;
-
-    console.log(`TAGS =========> ${tags}`);
 
     const titleUpperCase = title.toUpperCase();
     const isTitleTaken =
@@ -29,30 +26,23 @@ export async function createProject(
         .replace(/\s+/g, '-')
         .replace(/['"]/g, '');
     const imageName = `${normalizedTitle}-image`;
-    console.log(`NOME DA IMAGEM =========> ${imageName}`);
-    console.log(
-        `BUFFER DA IMAGEM =========> ${imageBuffer ? 'true' : 'false'}`,
-    );
 
     const { data, error } = await supabase.storage
         .from('project-image')
-        .upload(`public/${imageName}`, imageBuffer!, { upsert: true });
-    if (error) console.log(`ERRO DO SUPABASE =========> ${error}`);
+        .upload(`${imageName}`, imageBuffer!, { upsert: true });
     if (error) throw errorUtils.internalServerError('Error uploading image');
 
-    console.log(`DATA DA IMAGEM =========>`);
-    console.log(data);
-
-    const imagePath = data?.path;
+    const imagePath = data!.path;
     const imageUrl = await supabase.storage
         .from('project-image')
         .getPublicUrl(imagePath!);
-
-    console.log(`URL DA IMAGEM =========> ${imageUrl.data.publicUrl}`);
+    if (!imageUrl)
+        throw errorUtils.internalServerError('Error getting image URL');
 
     const newProjectData: newProjectData = {
         ...rest,
-        imagePath: imageUrl.data.publicUrl,
+        imagePath,
+        imageUrl: imageUrl.data.publicUrl,
         title: titleUpperCase,
     };
     const createdProject =
@@ -64,7 +54,6 @@ export async function createProject(
         tags,
         createdProject.id,
     );
-
     if (!associatedTags)
         throw errorUtils.internalServerError('Error associating tags');
 
@@ -82,7 +71,7 @@ export async function deleteProject(projectId: string) {
         .remove([project.imagePath]);
     if (error) throw errorUtils.internalServerError('Error deleting image');
 
-    await deleteProjectTags(projectId);
+    // await deleteProjectTags(projectId);
 
     return await projectRepository.deleteProject(projectId);
 }
