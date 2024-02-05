@@ -2,7 +2,7 @@ import * as projectRepository from '../repositories/projectRepository';
 import {
     newProjectDataInterface,
     newProjectData,
-    updateProjectDataInterface,
+    updateProjectDataSchemaInterface,
 } from '../repositories/projectRepository';
 import * as errorUtils from '../utils/errorUtils';
 import supabase from '../config/supabaseClient';
@@ -78,15 +78,14 @@ export async function deleteProject(projectId: string) {
 
 export async function updateProject(
     projectId: string,
-    newData: updateProjectDataInterface,
+    newData: updateProjectDataSchemaInterface,
 ) {
     const project = await projectRepository.getProjectById(projectId);
     if (!project) throw errorUtils.notFoundError('Project not found');
 
     const { tags, ...newProjectData } = newData;
-    if (tags) {
-        await tagService.treatUpdatedProjectTags(newData.tags, projectId);
-    }
+
+    if (tags) await tagService.treatUpdatedProjectTags(tags, projectId);
 
     return await projectRepository.updateProject(projectId, newProjectData);
 }
