@@ -21,7 +21,7 @@ projectRouter.delete(
     projectController.deleteProject,
 );
 
-projectRouter.put(
+projectRouter.patch(
     '/updateProject/:projectId',
     tokenMiddleware,
     validateSchema(updateProjectDataSchema),

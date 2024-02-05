@@ -33,11 +33,11 @@ export async function getProjectsByUserId(req: Request, res: Response) {
     const { userId } = req.params;
     const projects = await projectService.getProjectsByUserId(userId);
 
-    return res.sendStatus(201).json(projects);
+    return res.sendStatus(200).json(projects);
 }
 
 export async function getProjects(req: Request, res: Response) {
     const projects = await projectService.getProjects();
 
-    return res.sendStatus(201).json(projects);
+    return res.sendStatus(200).json(projects);
 }
