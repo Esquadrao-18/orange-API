@@ -40,7 +40,7 @@ export async function getProjectById(projectId: string) {
         where: { id: projectId },
         include: {
             ProjectTag: {
-                include: {
+                select: {
                     Tag: {
                         select: {
                             id: true,
@@ -52,31 +52,6 @@ export async function getProjectById(projectId: string) {
         },
     });
 }
-
-// export async function getProjectById(projectId: string) {
-//     return prisma.project.findUnique({
-//         where: { id: projectId },
-//         select: {
-//             id: true,
-//             title: true,
-//             description: true,
-//             imagePath: true,
-//             userId: true,
-//             link: true,
-//             releaseDate: true,
-//             ProjectTag: {
-//                 select: {
-//                     Tag: {
-//                         select: {
-//                             id: true,
-//                             name: true,
-//                         },
-//                     },
-//                 },
-//             },
-//         },
-//     });
-// }
 
 export async function getProjectsByUserId(userId: string) {
     return prisma.project.findMany({
@@ -85,7 +60,7 @@ export async function getProjectsByUserId(userId: string) {
         },
         include: {
             ProjectTag: {
-                include: {
+                select: {
                     Tag: {
                         select: {
                             id: true,
@@ -98,41 +73,21 @@ export async function getProjectsByUserId(userId: string) {
     });
 }
 
-// export async function getProjectsByUserId(
-//     userId: string,
-//     limit: number,
-//     offset: number,
-// ) {
-//     return prisma.project.findMany({
-//         where: {
-//             userId: userId,
-//         },
-//         select: {
-//             id: true,
-//             title: true,
-//             description: true,
-//             imagePath: true,
-//             userId: true,
-//             link: true,
-//             releaseDate: true,
-//             ProjectTag: {
-//                 select: {
-//                     Tag: {
-//                         select: {
-//                             id: true,
-//                             name: true,
-//                         },
-//                     },
-//                 },
-//             },
-//         },
-//         take: limit,
-//         skip: offset,
-//     });
-// }
-
 export async function getProjects() {
-    return prisma.project.findMany();
+    return prisma.project.findMany({
+        include: {
+            ProjectTag: {
+                select: {
+                    Tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
 }
 
 export interface newProjectDataSchemaInterface
