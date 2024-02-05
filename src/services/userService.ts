@@ -53,8 +53,14 @@ export async function signIn(userCredentials: SignInData) {
 export async function signInWithGoogle(googleUser: SignInWithGoogleData) {
     const { email } = googleUser;
 
-    const user = await userRepository.findUserByEmail(email);
-    if (!user) return await userRepository.createUser(googleUser);
+    let user = await userRepository.findUserByEmail(email);
+
+    if (!user) {
+        user = await userRepository.createUser(googleUser);
+        if (!user) throw errorUtils.internalServerError('User not created');
+    } else if (!user.googleId) {
+        await userRepository.updateUser(user.id, googleUser);
+    }
 
     const userInfo: TokenUserInfo = {
         id: user.id,
