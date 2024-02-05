@@ -64,18 +64,16 @@ export async function treatUpdatedProjectTags(
             treatedTags.push(existingTag);
         }
     }
+
     const currentProjectTags = await tagRepository.getProjectTags(projectId);
-    console.log('CURRENT PROJECT TAGS ==========>');
-    console.log(currentProjectTags);
 
     const tagsToRemove = currentProjectTags.filter(
-        currentTag => !treatedTags.some(tag => tag.id === currentTag.id),
+        currentTag =>
+            !treatedTags.some(treatedTag => treatedTag.id === currentTag.tagId),
     );
-    console.log('TAGS TO REMOVE ==========>');
-    console.log(tagsToRemove);
 
-    for (const tag of tagsToRemove) {
-        await tagRepository.removeTagFromProject(tag.id, projectId);
+    for (const projectTag of tagsToRemove) {
+        await tagRepository.removeTagFromProject(projectTag.id);
     }
 
     for (const tag of treatedTags) {
