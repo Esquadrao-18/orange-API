@@ -86,6 +86,12 @@ export async function getProjects() {
                     },
                 },
             },
+            User: {
+                select: {
+                    name: true,
+                    lastName: true,
+                },
+            },
         },
     });
 }
